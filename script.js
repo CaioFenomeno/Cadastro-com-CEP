@@ -37,3 +37,32 @@ function restaurarFormulario() {
     document.getElementById('estado').value = dados.estado || '';
   }
 }
+
+document.getElementById('cep').addEventListener('blur', buscarCEP);
+
+function buscarCEP() {
+  const cep = document.getElementById('cep').value;
+
+  if (cep.length !== 8 || isNaN(cep)) {
+    alert('CEP inválido. Digite um CEP com 8 números.');
+    return;
+  }
+
+  fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.erro) {
+        alert('CEP não encontrado.');
+        return;
+      }
+
+      document.getElementById('rua').value = data.logradouro || '';
+      document.getElementById('bairro').value = data.bairro || '';
+      document.getElementById('cidade').value = data.localidade || '';
+      document.getElementById('estado').value = data.uf || '';
+      salvarFormulario(); // Salva os dados atualizados
+    })
+    .catch(() => {
+      alert('Erro ao buscar o CEP. Tente novamente.');
+    });
+}
